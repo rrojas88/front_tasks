@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ejemplo SQLite en el navegador</title>
+    <!--
+    <script src="js/worker.sql-wasm.js"></script>
+    <script src="js/codemirror.js"></script> -->
+    <script src="js/sql-wasm.js"></script>
+    <!--
+    <script src="js/sql.min.js"></script> -->
+    <!--
+    <script src="js/gui.js"></script> -->
+    <script>
+        const init = async () => {
+            console.log('algo x1 ')
+            const SQL = await initSqlJs({
+                // HAce un Get:
+                locateFile: file => `https://sql.js.org/dist/${file}`
+                //locateFile: file => `js/sql-wasm.wasm`
+            });
+            const db = new SQL.Database();
+
+            // Crear tabla "personas"
+            db.run('CREATE TABLE personas (nombre TEXT, edad INTEGER)');
+
+            // Insertar datos de personas en la tabla
+            let nombre = 'Juan';
+            let edad = 30;
+            db.run(`INSERT INTO personas (nombre, edad) VALUES (?, ?)`, [nombre, edad]);
+
+            nombre = 'María';
+            edad = 25;
+            db.run(`INSERT INTO personas (nombre, edad) VALUES (?, ?)`, [nombre, edad]);
+
+            // Mostrar los datos de la tabla en la consola del navegador
+            let resultado = db.exec('SELECT * FROM personas');
+            console.log('resultado');
+            console.log(resultado);
+        }
+        init()
+    </script>
+</head>
+<body>
+    <h1>Ejemplo SQLite en el navegador</h1>
+</body>
+</html>

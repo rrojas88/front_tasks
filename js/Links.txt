@@ -1,0 +1,4 @@
+URL del WASM:
+
+view-source:https://sql.js.org/dist/worker.sql-wasm.js
+
