@@ -20,23 +20,6 @@ const init = async () => {
 init()
 
 
-// Create an HTML table
-var tableCreate = function () {
-	function valconcat(vals, tagName) {
-		if (vals.length === 0) return '';
-		var open = '<' + tagName + '>', close = '</' + tagName + '>';
-		return open + vals.join(close + open) + close;
-	}
-	return function (columns, values) {
-		var tbl = document.createElement('table');
-		var html = '<thead>' + valconcat(columns, 'th') + '</thead>';
-		var rows = values.map(function (v) { return valconcat(v, 'td'); });
-		html += '<tbody>' + valconcat(rows, 'tr') + '</tbody>';
-		tbl.innerHTML = html;
-		return tbl;
-	}
-}();
-
 // Execute the commands when the button is clicked
 function execEditorContents() {
 	let querys = commandsElm.value
@@ -52,7 +35,7 @@ function execEditorContents() {
 	}
 	// Mostrar los datos de la tabla en la consola del navegador
 	try {
-		let resultado = db.exec('SELECT * FROM employees');
+		let resultado = db.exec( querys );
 		console.log('resultado employees:');
 		console.log(resultado);
 	}
@@ -70,9 +53,18 @@ dbFileElm.onchange = function () {
 	var r = new FileReader();
 	r.onload = function () {
 		console.log("Loading database from file");
-		// Show the schema of the loaded database
 		//editor.setValue("SELECT `name`, `sql`\n  FROM `sqlite_master`\n  WHERE type='table';");
-		execEditorContents();
+		commandsElm.value = "SELECT *\n  FROM `employees`\n ;"
+
+		const Uints = new Uint8Array( r.result );
+
+		initSqlJs({}).then(function( SQLite ){
+			//Create the database
+			db = new SQLite.Database( Uints );
+			let resultado = db.exec( commandsElm.value );
+			console.log('Cargados employees:');
+			console.log(resultado);
+		});
 	}
 	r.readAsArrayBuffer(f);
 }
